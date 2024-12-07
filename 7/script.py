@@ -15,9 +15,9 @@ for line in data:
 
 operations = ["+", "*"]
 
-def evaluate(values, result):
-    leftVal = values.pop(0)
-    rightVal = values.pop(0)
+def evaluate(vals, result):
+    leftVal = vals.pop(0)
+    rightVal = vals.pop(0)
     
     for op in operations:
         if op == "+":
@@ -27,12 +27,15 @@ def evaluate(values, result):
         elif op == "||":
             currentRes  = int(str(leftVal) + str(rightVal))
         
-        if len(values) == 0:
+        if (currentRes > result):
+            continue
+
+        if len(vals) == 0:
             # print(currentRes)
             if int(currentRes) == int(result):
                 return True
         else:
-            newValues = values.copy()
+            newValues = vals.copy()
             newValues.insert(0, currentRes)
             
             if evaluate(newValues, result):
@@ -43,7 +46,7 @@ def evaluate(values, result):
 res_one = 0
 
 for key in values:
-    found = evaluate(values[key], key)
+    found = evaluate(values[key].copy(), int(key))
 
     if found:
         res_one += int(key)
@@ -55,9 +58,9 @@ res_two = 0
 operations.append("||")
 
 for key in values:
-    found = evaluate(values[key], key)
+    found = evaluate(values[key].copy(), int(key))
 
     if found:
-        res_one += int(key)
+        res_two += int(key)
 
-print(res_one)
+print(res_two)
