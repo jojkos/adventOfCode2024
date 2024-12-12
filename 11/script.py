@@ -32,35 +32,51 @@ def blink(data):
 
 def solveFirst(input):
     count = 0
-    Max = 25
+    Max = 10
     print(input)
 
     while count < Max:
         input = blink(input)
         count += 1
-        print(count, len(input))
+        print(count, len(input), input)
 
     print(len(input))
+    
 
 def solveSecond(input):
     count = 0
-    Max = 75
-    print(input)
-    res = len(input)
-    # set made from input
-    visited = {}
+    max = 75
+    cache = {}
 
+    for val in input:
+        if val not in cache:
+            cache[val] = 1
+        else:
+            cache[val] += 1
 
-    while count < Max:
-        for val in input:
-            if val not in visited:
-                visited[val] = []
+    while count <= max:
+        newCache = {}
+        # reduce the values in cache into sum
+        sum = 0
+        for val in cache:
+            sum += cache[val]
+        print(count, sum)
+
+        
+        for val in cache:
+            occurence = cache[val]
             
-            
-        break
-    print(visited)
+            newVals = applyRule(val)
 
-    print(len(input))
+            for v in newVals:
+                if v not in newCache:
+                    newCache[v] = occurence
+                else:
+                    newCache[v] += occurence
+        
+        cache = newCache
+        count += 1
+
 
 # solveFirst(input)
 
