@@ -1,0 +1,20 @@
+RRRRRIIRCF
+RRIRRIIRCC
+RRRRRRRRFF
+
+RRRRR..R..
+RR.RR..R..
+RR.RRRRR..
+
+-------+  +-+
+|      |  | |
+| |  | |__| |
+| |  |      |
+| |  -------+
+
+OOOOO
+OXOXO
+OOOOO
+XXOXO
+XOOOO
+OX000
