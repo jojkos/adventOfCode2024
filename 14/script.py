@@ -1,3 +1,5 @@
+from PIL import Image
+
 class Map:
     movement = {
         "left": (0, -1),
@@ -42,6 +44,25 @@ class Map:
             print()
         print()
 
+    def putpixel(self, img, x, y, color):
+        img.putpixel((x, y), color)
+
+
+    def printImg(self, t):        
+        img = Image.new("RGB", (self.width, self.height), (255, 255, 255))
+
+        map = self.map
+
+        for x in range(len(map)):
+            for y in range(len(map[0])):
+                if map[x][y] == self.Empty:
+                    self.putpixel(img, y, x, (255, 255, 255))
+                else:
+                    self.putpixel(img, y, x, (255, 0, 0))
+
+        img.save(f"out/{t}.png")
+        
+
     def isInsideMapBounds(self, pos, map):
         (x, y) = pos
         return x >= 0 and x < len(map) and y >= 0 and y < len(map[0])
@@ -49,6 +70,7 @@ class Map:
     def move(self, robots, count):
         map = self.map
         newMap = [[self.Empty for y in range(len(map[0]))] for x in range(len(map))]
+        newRobots = []
 
         for robot in robots:
             posX, posY = robot["pos"]
@@ -62,8 +84,11 @@ class Map:
                 newMap[newPosX][newPosY] = []
 
             newMap[newPosX][newPosY].append(vel)
+            newRobots.append({"pos": (newPosX, newPosY), "vel": (velX, velY)})
 
         self.map = newMap
+
+        return newRobots
 
     def countRobotsInQuadrants(self):
         xMid = self.height // 2
@@ -114,9 +139,15 @@ for line in input:
 
 map = Map(width, height, robots)
 
-t = 100
+t = 10000
 
 # map.print(True)
-map.move(robots, t)
-# map.print(True)
-map.countRobotsInQuadrants()
+
+
+for i in range(t):
+    robots = map.move(robots, 1)
+    map.printImg(i+1)
+
+# map.print() 
+# map.printImg(1)
+# map.countRobotsInQuadrants()
