@@ -6,7 +6,9 @@ class Map:
         "down": (1, 0),
     }
 
-    def __init__(self, ):
+    def __init__(
+        self,
+    ):
         with open("input.txt", "r") as file:
             input = file.readlines()
 
@@ -32,23 +34,61 @@ class Map:
             dx, dy = self.movement[dir]
             newX, newY = x + dx, y + dy
 
-            if not self.isInsideMapBounds((newX, newY)) or self.map[newX][newY] != self.map[x][y]:
+            if (
+                not self.isInsideMapBounds((newX, newY))
+                or self.map[newX][newY] != self.map[x][y]
+            ):
                 perimeter += 1
 
         return perimeter
 
     def findRegions(self):
-        regions = {}
-        
+        visited = []
+        regions = []
+
         for x in range(len(self.map)):
             for y in range(len(self.map[0])):
-                val = self.map[x][y]
+                key = f"{x},{y}"
 
-                if val not in regions:
-                    regions[val] = {"area": 0, "perimeter": 0}
-                
-                regions[val]["area"] += 1
-                regions[val]["perimeter"] += self.getPerimeter((x, y))
+                if key in visited:
+                    continue
+
+                stack = [(x, y)]
+                area = 0
+                perimeter = 0
+
+                visited.append(key)
+
+                while len(stack) > 0:
+                    currentX, currentY = stack.pop()
+                    currentKey = f"{currentX},{currentY}"
+                    currentVal = self.map[currentX][currentY]
+
+                    area += 1
+                    perimeter += self.getPerimeter((currentX, currentY))
+
+                    for dir in self.movement:
+                        dx, dy = self.movement[dir]
+                        newX, newY = currentX + dx, currentY + dy
+                        newKey = f"{newX},{newY}"
+
+                        if (
+                            not self.isInsideMapBounds((newX, newY))
+                            or newKey in visited
+                        ):
+                            continue
+
+                        newVal = self.map[newX][newY]
+
+                        if newVal != currentVal:
+                            continue
+
+                        stack.append((newX, newY))
+                        visited.append(newKey)
+
+                regions.append(
+                    {"area": area, "perimeter": perimeter, "val": currentVal}
+                )
 
         print(regions)
 
@@ -62,6 +102,6 @@ regions = field.findRegions()
 price = 0
 
 for region in regions:
-    price += regions[region]["area"] * regions[region]["perimeter"]
+    price += region["area"] * region["perimeter"]
 
 print(price)
