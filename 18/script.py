@@ -154,11 +154,36 @@ map = Map(size, size, count)
 path = map.findPath((0, 0), (size - 1, size - 1))
 res = len(path) - 2
 
-remaningBlocks = map.blocks[res:]
+remaningBlocks = map.blocks[count:]
 
-print(len(remaningBlocks))
+origMapState = map.copyMap()
 
-# i = count 
+def binarySearch(blocks):
+    left = 0
+    right = len(blocks) - 1
+    
+    while left < right:
+        map.map = [row[:] for row in origMapState]
+
+        mid = (left + right) // 2
+
+        for i in range(count + mid + 1):
+            (x, y) = map.blocks[i]
+            map.map[x][y] = map.Wall
+
+        path = map.findPath((0, 0), (size - 1, size - 1))
+        if path is None:
+            right = mid
+        else:
+            left = mid + 1
+    return left
+
+a = binarySearch(remaningBlocks)
+y,x = map.blocks[count + a]
+print(res)
+print(f"{x},{y}")
+
+# i = count
 # while True:
 #     print(i)
 #     (x,y) = map.blocks[i]
