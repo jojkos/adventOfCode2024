@@ -152,22 +152,25 @@ map = Map(size, size, count)
 # map.print()
 
 path = map.findPath((0, 0), (size - 1, size - 1))
-visited = {}
+res = len(path) - 2
 
-for p in path:
-    visited[f"{p[0]}_{p[1]}"] = True
+remaningBlocks = map.blocks[res:]
 
-i = count 
-while True:
-    print(i)
-    (x,y) = map.blocks[i]
-    map.map[x][y] = map.Wall
+print(len(remaningBlocks))
+
+# i = count 
+# while True:
+#     print(i)
+#     (x,y) = map.blocks[i]
+#     map.map[x][y] = map.Wall
     
-    res = map.findPath((0, 0), (size - 1, size - 1))
+#     res = map.findPath((0, 0), (size - 1, size - 1))
     
-    if res is None:
-        block = map.blocks[i]
-        print(f"{i}: {block[1]},{block[0]}")
-        break
-    i += 1
-map.print()
+#     if res is None:
+#         block = map.blocks[i]
+#         print(f"{i}: {block[1]},{block[0]}")
+#         break
+#     i += 1
+# map.print()
+
+# # zkusit binary search

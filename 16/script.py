@@ -87,33 +87,49 @@ class Map:
             pos[1] + self.movement[orientation][1],
         )
 
+    def getDistance(self, pos1, pos2):
+        return abs(pos1[0] - pos2[0]) + abs(pos1[1] - pos2[1])
+
     def findPath(self, startPos, dir, endPos):
         stack = []
 
-        heapq.heappush(stack, (0, startPos, dir, 0))  # priority, pos, dir, score
+        heapq.heappush(
+            stack, (0, startPos, dir, 0, [startPos])
+        )  # priority, pos, dir, score, path
 
         minScore = None
         i = 0
         visited = {}
+        bestSeats = {}
 
         while len(stack) > 0:
-            prio, pos, dir, score = heapq.heappop(stack)
+            prio, pos, dir, score, path = heapq.heappop(stack)
 
             if pos == endPos:
                 if minScore is None or score < minScore:
                     minScore = score
+                print("found:", score, minScore)
 
-                print(score, minScore)
+                for p in path:
+                    key = f"{p[0]}_{p[1]}"
+                    bestSeats[key] = True
 
             key = f"{pos[0]}_{pos[1]}"
+            distanceToEnd = self.getDistance(pos, endPos)
 
             if key in visited:
+                # print(len(stack))
+                print(visited[key] < distanceToEnd)
                 continue
+                if visited[key] < distanceToEnd:
+                    continue
+                else:
+                    visited[key] = distanceToEnd
+            else:
+                visited[key] = distanceToEnd
 
             if minScore is not None and score > minScore:
                 continue
-
-            visited[key] = True
 
             # self.print(pos, dir, True)
 
@@ -150,12 +166,14 @@ class Map:
                     and self.map[nextPos[0]][nextPos[1]] != self.Wall
                 ):
                     # manhatan distance from nextPos to endPos
-                    dist = abs(nextPos[0] - endPos[0]) + abs(nextPos[1] - endPos[1])
+                    dist = self.getDistance(nextPos, endPos)
 
                     heapq.heappush(
-                        stack, (dist + nextScore, nextPos, nextDir, nextScore)
+                        stack,
+                        (dist + nextScore, nextPos, nextDir, nextScore, path + [pos]),
                     )
 
+        print("bestSeats", len(bestSeats) + 1)
         return minScore
 
 
