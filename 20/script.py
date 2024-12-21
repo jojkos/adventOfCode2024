@@ -238,22 +238,29 @@ class Map:
             if pos == (7,9):
                 print("TEST")
 
-            map.map = originalMap
-            map.map = map.copyMap()
+            for d in self.dirs:
+                nextPos = self.movePos(pos, d)
+                nextPosVal = self.map[nextPos[0]][nextPos[1]]
 
-            res = self.findPath(pos, self.endPos, cheatLen, visited, True)
+                if nextPosVal == self.Wall:
+                    map.map = originalMap
+                    map.map = map.copyMap()
 
-            for r in res:
-                resLenPath = r["len"]
-                fullLen = resLenPath + i
-                visited[key] = True
+                    self.map[nextPos[0]][nextPos[1]] = map.Empty
 
-                if fullLen < originalLen:
-                    diff = originalLen - fullLen
+                    res = self.findPath(nextPos, self.endPos, cheatLen, visited, True)
 
-                    if diff not in lengths:
-                        lengths[diff] = 0
-                    lengths[diff] += 1
+                    for r in res:
+                        resLenPath = r["len"]
+                        fullLen = resLenPath + i + 1
+                        visited[key] = True
+
+                        if fullLen < originalLen:
+                            diff = originalLen - fullLen
+
+                            if diff not in lengths:
+                                lengths[diff] = 0
+                            lengths[diff] += 1
 
         return lengths
 
