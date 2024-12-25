@@ -97,41 +97,46 @@ class Map:
             stack, (0, startPos, dir, 0, [startPos])
         )  # priority, pos, dir, score, path
 
-        minScore = None
-        i = 0
+        bestPaths = []
         visited = {}
         bestSeats = {}
+        minScore = None
 
+        c = 0
         while len(stack) > 0:
             prio, pos, dir, score, path = heapq.heappop(stack)
 
             if pos == endPos:
                 if minScore is None or score < minScore:
                     minScore = score
-                print("found:", score, minScore)
+
+                if score > minScore:
+                    break
+
+                print("found:", score)
+                bestPaths.append((score, path))
 
                 for p in path:
                     key = f"{p[0]}_{p[1]}"
                     bestSeats[key] = True
 
-            key = f"{pos[0]}_{pos[1]}"
-            distanceToEnd = self.getDistance(pos, endPos)
+                for p in path:
+                    key = f"{p[0]}_{p[1]}"
 
-            if key in visited:
-                # print(len(stack))
-                print(visited[key] < distanceToEnd)
+            key = f"{pos[0]}_{pos[1]}"
+
+            # if c % 1000 == 0:
+            #     print(c, len(stack), score, minScore)
+            # c+= 1
+
+            if key in visited and visited[key] < score - 1000:
+                # print("skip", key, visited[key], score)
                 continue
-                if visited[key] < distanceToEnd:
-                    continue
-                else:
-                    visited[key] = distanceToEnd
-            else:
-                visited[key] = distanceToEnd
 
             if minScore is not None and score > minScore:
                 continue
 
-            # self.print(pos, dir, True)
+            visited[key] = score
 
             nextChoices = []
 
@@ -173,12 +178,12 @@ class Map:
                         (dist + nextScore, nextPos, nextDir, nextScore, path + [pos]),
                     )
 
-        print("bestSeats", len(bestSeats) + 1)
-        return minScore
+        return (minScore, bestSeats)
 
 
 map = Map("input.txt")
 # map.print()
 
-res = map.findPath(map.startPos, ">", map.endPos)
+res, bestSeats = map.findPath(map.startPos, ">", map.endPos)
 print(res)
+print(len(bestSeats) + 1)
