@@ -33,29 +33,36 @@ for line in input:
         operations.append((firstWire, secondWire, operator, resultWire))
 
 def runWires(wires):
-    while len(operations) > 0:
-        op = operations.pop(0)
+    wiresClone = wires.copy()
+    operationsClone = operations.copy()
+
+    while len(operationsClone) > 0:
+        op = operationsClone.pop(0)
         firstWire, secondWire, operator, resultWire = op
 
-        if not firstWire in wires or not secondWire in wires:
-            operations.append(op)
+        if not firstWire in wiresClone or not secondWire in wiresClone:
+            operationsClone.append(op)
             continue
 
         if operator == "AND":
-            res = wires[firstWire] & wires[secondWire]
+            res = wiresClone[firstWire] & wiresClone[secondWire]
         elif operator == "OR":
-            res = wires[firstWire] | wires[secondWire]
+            res = wiresClone[firstWire] | wiresClone[secondWire]
         elif operator == "XOR":
-            res = wires[firstWire] ^ wires[secondWire]
+            res = wiresClone[firstWire] ^ wiresClone[secondWire]
+        
+        # if resultWire.startswith("z"):
+        #     if operator != "XOR":
+        #         print(operator, firstWire, secondWire, resultWire)
 
-        wires[resultWire] = res
+        wiresClone[resultWire] = res
 
 
     results  = []
-
-    for wire in wires:
+    
+    for wire in wiresClone:
         if wire.startswith("z"):
-            results.append([wire, wires[wire]])
+            results.append([wire, wiresClone[wire]])
     # sort results by wire name
     results.sort(key=lambda x: x[0])
     output = ""
@@ -98,8 +105,18 @@ expectedResultBinary = bin(expectedResultDecimal)[2:]
 
 
 # try to all combinations of 4 output wires to get correct result
-# res = runWires(wires)
-# print("res:", res, "expected", expectedResultDecimal)
+res = runWires(wires)
+# print("res:", int(res, 2), "expected", expectedResultDecimal)
+print("res:", res, "expected", expectedResultBinary)
+print(res == expectedResultBinary)
+print("length:", len(expectedResultBinary))
+
+# go over each character of expectedResultBinary backwards
+for i in range(len(expectedResultBinary) - 1, -1, -1):
+    # print(i)
+    if expectedResultBinary[i] != res[i]:
+        print("different at index", i)
+        
 
 nodeIds = {}
 
@@ -136,40 +153,3 @@ nx.draw_networkx_edge_labels(G, pos, edge_labels=edge_labels, font_size=10, font
 
 # Show the plot
 plt.show()
-
-
-# # Extract node positions
-# x_nodes = [pos[node][0] for node in G.nodes()]
-# y_nodes = [pos[node][1] for node in G.nodes()]
-
-# # Extract edges for visualization
-# edges = G.edges()
-# x_edges = []
-# y_edges = []
-# for edge in edges:
-#     x0, y0 = pos[edge[0]]
-#     x1, y1 = pos[edge[1]]
-#     x_edges.append(x0)
-#     x_edges.append(x1)
-#     y_edges.append(y0)
-#     y_edges.append(y1)
-
-# # Create Plotly figure
-# fig = go.Figure()
-
-# # Add edges as lines
-# fig.add_trace(go.Scatter(x=x_edges, y=y_edges, mode='lines', line=dict(width=0.5, color='gray')))
-
-# # Add nodes as points
-# fig.add_trace(go.Scatter(x=x_nodes, y=y_nodes, mode='markers+text', text=[f'Node {i}' for i in G.nodes()],
-#                          marker=dict(size=15, color='lightblue', line=dict(width=1, color='black')),
-#                          textposition="bottom center"))
-
-# # Set layout for better interactivity
-# fig.update_layout(title="Interactive Graph", showlegend=False, hovermode='closest',
-#                   xaxis=dict(showgrid=False, zeroline=False),
-#                   yaxis=dict(showgrid=False, zeroline=False),
-#                   plot_bgcolor='white')
-
-# # Show the plot
-# fig.show()
