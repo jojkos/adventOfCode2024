@@ -117,11 +117,11 @@ class Map:
                 # print("found:", score, minScore)
                 # break
                 if not findAll:
-                    return {
+                    return [{
                         "path": path,
                         "dirs": dir,
                         "len" : score
-                    }
+                    }]
                 else:
                     allPaths.append({
                         "path": path,
@@ -226,17 +226,15 @@ class Map:
         visited = {}
         lengths = {}
         originalMap = map.copyMap()
-        cheatLen = 1
+        cheatLen = 0
 
         for i in range(len(path)):
             pos = path[i]
+            print(f"{i}/{len(path)}")
             key = f"{pos[0]}_{pos[1]}"
 
             if self.map[pos[0]][pos[1]] == self.End:
                 break
-            
-            if pos == (7,9):
-                print("TEST")
 
             for d in self.dirs:
                 nextPos = self.movePos(pos, d)
@@ -248,19 +246,31 @@ class Map:
 
                     self.map[nextPos[0]][nextPos[1]] = map.Empty
 
-                    res = self.findPath(nextPos, self.endPos, cheatLen, visited, True)
+                    res = self.findPath(nextPos, self.endPos, cheatLen, visited, False)
 
+                    tmpMap = map.copyMap()
                     for r in res:
+                        map.map = tmpMap
+                        map.map = map.copyMap()
                         resLenPath = r["len"]
                         fullLen = resLenPath + i + 1
                         visited[key] = True
 
                         if fullLen < originalLen:
                             diff = originalLen - fullLen
-
+                            # print("diff:", diff, pos, nextPos, originalLen, i, resLenPath)
+                            # print the path in map
+                            # print(diff)
+                            # for i in range(len(r["path"])):
+                            #     p = r["path"][i]
+                            #     d = r["dirs"][i]
+                            #     map.map[pos[0]][p[1]] = d
+                            # map.print()
+                            
                             if diff not in lengths:
                                 lengths[diff] = 0
                             lengths[diff] += 1
+                            break
 
         return lengths
 
@@ -321,7 +331,7 @@ class Map:
 map = Map("input.txt")
 # map.print()
 
-res = map.findPath(map.startPos, map.endPos)
+res = map.findPath(map.startPos, map.endPos)[0]
 originalLen = res["len"]
 
 print("original len:", originalLen)
@@ -334,6 +344,8 @@ print("original len:", originalLen)
 # map.print()
 
 lengths = map.findAllCheatLengths(res["path"], res["dirs"], originalLen)
+
+
 # walls = map.getWallsAlongThePath(res["path"])
 # print(len(walls))
 # lengths = map.removeOnWallAtATime(walls, originalLen)
